@@ -15,4 +15,4 @@ Simple Java console application connected to MySQL database.
 - Delete student
 
 ## Author
-Duraid Hadaya
+Duraid Hadaia
