@@ -88,6 +88,34 @@ public class StudentDAO {
 
 	        }
 
+	        public void updateStudent(int id, String name, String email, String major) {
+
+	            try {
+
+	                Connection conn = DBConnection.getConnection();
+
+	                String sql = "UPDATE students SET name=?, email=?, major=? WHERE id=?";
+
+	                PreparedStatement stmt = conn.prepareStatement(sql);
+
+	                stmt.setString(1, name);
+	                stmt.setString(2, email);
+	                stmt.setString(3, major);
+	                stmt.setInt(4, id);
+
+	                int rows = stmt.executeUpdate();
+
+	                if (rows > 0) {
+	                    System.out.println("Student updated successfully!");
+	                } else {
+	                    System.out.println("Student not found.");
+	                }
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+
+	        }
 
 }
 
