@@ -17,7 +17,8 @@ public class MainApp {
             System.out.println("\n===== Student Management System =====");
             System.out.println("1. Add Student");
             System.out.println("2. View Students");
-            System.out.println("3. Exit");
+            System.out.println("3. Delete Student");
+            System.out.println("4. Exit");
 
             System.out.print("Choose option: ");
 
@@ -34,6 +35,7 @@ public class MainApp {
 
                 System.out.print("Enter major: ");
                 String major = scanner.nextLine();
+                
 
                 Student student = new Student(name, email, major);
 
@@ -46,8 +48,17 @@ public class MainApp {
                 dao.viewStudents();
 
             }
-
             else if (choice == 3) {
+
+                System.out.print("Enter student ID to delete: ");
+                int id = scanner.nextInt();
+
+                dao.deleteStudent(id);
+
+            }
+
+            
+            else if (choice == 4) {
 
                 System.out.println("Goodbye!");
                 break;

@@ -7,7 +7,7 @@ import model.Student;
 
 public class StudentDAO {
 	
-	 public void addStudent(Student student) {
+			public void addStudent(Student student) {
 
 
 	        try {
@@ -33,6 +33,8 @@ public class StudentDAO {
 	        
 	        
 	        public void viewStudents() {
+
+	        	
 	        	
 	        	try {
 	        		
@@ -59,5 +61,34 @@ public class StudentDAO {
 
 
 	 }
+
+	        public void deleteStudent(int id) {
+
+	            try {
+
+	                Connection conn = DBConnection.getConnection();
+
+	                String sql = "DELETE FROM students WHERE id = ?";
+
+	                PreparedStatement stmt = conn.prepareStatement(sql);
+
+	                stmt.setInt(1, id);
+
+	                int rows = stmt.executeUpdate();
+
+	                if (rows > 0) {
+	                    System.out.println("Student deleted successfully!");
+	                } else {
+	                    System.out.println("Student not found.");
+	                }
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+
+	        }
+
+
 }
+
 
