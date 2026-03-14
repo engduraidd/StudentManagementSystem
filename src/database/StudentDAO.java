@@ -1,11 +1,14 @@
 package database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import model.Student;
 
 public class StudentDAO {
 	
 	 public void addStudent(Student student) {
+
 
 	        try {
 
@@ -26,6 +29,35 @@ public class StudentDAO {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
+	 }
+	        
+	        
+	        public void viewStudents() {
+	        	
+	        	try {
+	        		
+	                Connection conn = DBConnection.getConnection();
+	        		String sql = "SELECT * FROM students";
+	                PreparedStatement stmt = conn.prepareStatement(sql);
+	                
+	                ResultSet rs = stmt.executeQuery();
+
+	                while (rs.next()) {
+
+	                    System.out.println(
+	                            rs.getInt("id") + " | " +
+	                            rs.getString("name") + " | " +
+	                            rs.getString("email") + " | " +
+	                            rs.getString("major")
+	                    );
+
+	                }
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+
 
 	 }
 }
+
