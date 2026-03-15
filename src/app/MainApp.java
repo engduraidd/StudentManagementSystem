@@ -1,4 +1,5 @@
 package app;
+import gui.MainFrame;
 
 import java.util.Scanner;
 
@@ -8,6 +9,10 @@ import model.Student;
 public class MainApp {
 
     public static void main(String[] args) {
+    	
+    	MainFrame frame = new MainFrame();
+        frame.setVisible(true);
+
 
         Scanner scanner = new Scanner(System.in);
         StudentDAO dao = new StudentDAO();
