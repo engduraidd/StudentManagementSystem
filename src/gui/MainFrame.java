@@ -1,41 +1,33 @@
 package gui;
 
 import javax.swing.*;
+import java.awt.*;
 
 
 public class MainFrame extends JFrame {
-
+	
+	CardLayout layout = new CardLayout();
+    JPanel container = new JPanel(layout);
+    
     public MainFrame() {
 
-        setTitle("Student Management System");
-        setSize(500,400);
+    	setTitle("Student Management System");
+        setSize(800,500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        setLayout(new java.awt.GridLayout(7,1,10,10));
-        
-        JLabel title = new JLabel("Student Management System");
-        title.setBounds(120,30,300,30);
-        add(title);
+        container.add(new DashboardPanel(this),"dashboard");
+        container.add(new AddStudentPanel(this),"add");
+        container.add(new ViewStudentsPanel(this),"view");
 
-        JButton addBtn = new JButton("Add Student");
-        
-        addBtn.setBounds(150,80,200,40);
-        add(addBtn);
-        addBtn.addActionListener(e -> {
-            new AddStudentFrame().setVisible(true);
-        });
-        
-        
-        
-        JButton viewBtn = new JButton("View Students");
-        viewBtn.setBounds(150,130,200,40);
-        add(viewBtn);
-        viewBtn.addActionListener(e -> {
-            new ViewStudentsFrame().setVisible(true);
-        });
+        add(container);
 
-      
+        layout.show(container,"dashboard");
+    }
+
+    public void showPanel(String name){
+        layout.show(container,name);
+    
 
     }
 

@@ -2,25 +2,41 @@ package gui;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.sql.*;
 
 import database.DBConnection;
 
-public class ViewStudentsFrame extends JFrame {
-	
-	//Variables: 
-	JTextField searchField;
-    JTable table;
+public class ViewStudentsPanel extends JPanel {
+
+	JTable table;
     DefaultTableModel model;
+    JTextField searchField;
 
-    //Student Table: 
-    public ViewStudentsFrame() {
+    public ViewStudentsPanel(MainFrame frame){
 
-    	setTitle("Students List");
-        setSize(600,400);
-        setLocationRelativeTo(null);
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new BorderLayout());
 
+        // SEARCH PANEL
+        JPanel topPanel = new JPanel();
+
+        JLabel searchLabel = new JLabel("Search:");
+        
+        searchField = new JTextField(20);
+        
+
+        topPanel.add(searchLabel);
+        topPanel.add(searchField);
+
+        add(topPanel, BorderLayout.NORTH);
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchStudents();
+            }
+        });
+
+
+        // TABLE
         model = new DefaultTableModel();
         table = new JTable(model);
 
@@ -29,58 +45,39 @@ public class ViewStudentsFrame extends JFrame {
         model.addColumn("Email");
         model.addColumn("Major");
 
-        
-        JPanel topPanel = new JPanel();
-
-        JLabel searchLabel = new JLabel("Search:");
-
-        searchField = new JTextField(20);
-
-        topPanel.add(searchLabel);
-        topPanel.add(searchField);
-
-        add(topPanel, java.awt.BorderLayout.NORTH);
-        
-        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                searchStudents();
-            }
-        });
-        
         JScrollPane scrollPane = new JScrollPane(table);
-        JPanel panel = new JPanel();
+
+        add(scrollPane, BorderLayout.CENTER);
+
+
+        // BUTTON PANEL
+        JPanel buttonPanel = new JPanel();
 
         JButton refreshBtn = new JButton("Refresh");
-        JButton deleteBtn = new JButton("Delete Selected");
-        JButton editBtn = new JButton("Edit Selected");
+        JButton editBtn = new JButton("Edit");
+        JButton deleteBtn = new JButton("Delete");
         JButton exportBtn = new JButton("Export Excel");
-        
+        JButton backBtn = new JButton("Back");
 
-        panel.add(refreshBtn);
-        panel.add(deleteBtn);
-        panel.add(editBtn);
-        panel.add(exportBtn);
-        
+        buttonPanel.add(refreshBtn);
+        buttonPanel.add(editBtn);
+        buttonPanel.add(deleteBtn);
+        buttonPanel.add(exportBtn);
+        buttonPanel.add(backBtn);
 
-        deleteBtn.addActionListener(e -> deleteStudent());
+        add(buttonPanel, BorderLayout.SOUTH);
+
+
+        // BUTTON ACTIONS
         refreshBtn.addActionListener(e -> refreshTable());
+        deleteBtn.addActionListener(e -> deleteStudent());
         editBtn.addActionListener(e -> editStudent());
         exportBtn.addActionListener(e -> exportToExcel());
-        
-
-        add(scrollPane, java.awt.BorderLayout.CENTER);
-        add(panel, java.awt.BorderLayout.SOUTH);
-        
+        backBtn.addActionListener(e -> frame.showPanel("dashboard"));
 
 
-        
-       
         loadStudents();
     }
-    
-    
-    
-    //*********************Methods***********************
     private void refreshTable(){
 
         model.setRowCount(0);
@@ -88,42 +85,9 @@ public class ViewStudentsFrame extends JFrame {
         loadStudents();
 
     }
-
-    private void deleteStudent(){
-
-        int selectedRow = table.getSelectedRow();
-
-        if(selectedRow == -1){
-            JOptionPane.showMessageDialog(this,"Please select a student first!");
-            return;
-        }
-
-        int id = (int) model.getValueAt(selectedRow,0);
+    private void loadStudents(){
 
         try{
-
-            Connection conn = DBConnection.getConnection();
-
-            String sql = "DELETE FROM students WHERE id = ?";
-
-            PreparedStatement stmt = conn.prepareStatement(sql);
-
-            stmt.setInt(1,id);
-
-            stmt.executeUpdate();
-
-            JOptionPane.showMessageDialog(this,"Student deleted successfully!");
-
-            refreshTable();
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-    }
-    private void loadStudents() {
-
-        try {
 
             Connection conn = DBConnection.getConnection();
 
@@ -144,17 +108,18 @@ public class ViewStudentsFrame extends JFrame {
 
             }
 
-        } catch(Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
 
     }
+
     private void editStudent(){
 
         int selectedRow = table.getSelectedRow();
 
         if(selectedRow == -1){
-            JOptionPane.showMessageDialog(this,"Please select a student first!");
+            JOptionPane.showMessageDialog(this,"Select a student first");
             return;
         }
 
@@ -173,7 +138,8 @@ public class ViewStudentsFrame extends JFrame {
             "Major:", majorField
         };
 
-        int option = JOptionPane.showConfirmDialog(this,message,"Edit Student",JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(
+                this,message,"Edit Student",JOptionPane.OK_CANCEL_OPTION);
 
         if(option == JOptionPane.OK_OPTION){
 
@@ -181,7 +147,8 @@ public class ViewStudentsFrame extends JFrame {
 
                 Connection conn = DBConnection.getConnection();
 
-                String sql = "UPDATE students SET name=?, email=?, major=? WHERE id=?";
+                String sql =
+                        "UPDATE students SET name=?, email=?, major=? WHERE id=?";
 
                 PreparedStatement stmt = conn.prepareStatement(sql);
 
@@ -192,7 +159,7 @@ public class ViewStudentsFrame extends JFrame {
 
                 stmt.executeUpdate();
 
-                JOptionPane.showMessageDialog(this,"Student updated successfully!");
+                JOptionPane.showMessageDialog(this,"Student updated");
 
                 refreshTable();
 
@@ -237,19 +204,18 @@ public class ViewStudentsFrame extends JFrame {
         }
 
     }
-
+    
     private void exportToExcel(){
 
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save Excel File");
+        JFileChooser chooser = new JFileChooser();
 
-        int userSelection = fileChooser.showSaveDialog(this);
+        int option = chooser.showSaveDialog(this);
 
-        if(userSelection == JFileChooser.APPROVE_OPTION){
+        if(option == JFileChooser.APPROVE_OPTION){
 
             try{
 
-                java.io.File file = fileChooser.getSelectedFile();
+                java.io.File file = chooser.getSelectedFile();
 
                 org.apache.poi.ss.usermodel.Workbook workbook =
                         new org.apache.poi.xssf.usermodel.XSSFWorkbook();
@@ -257,48 +223,76 @@ public class ViewStudentsFrame extends JFrame {
                 org.apache.poi.ss.usermodel.Sheet sheet =
                         workbook.createSheet("Students");
 
-                for(int i = 0; i < model.getColumnCount(); i++){
+                org.apache.poi.ss.usermodel.Row header =
+                        sheet.createRow(0);
 
-                    org.apache.poi.ss.usermodel.Row header =
-                            sheet.createRow(0);
-
-                    header.createCell(i).setCellValue(
-                            model.getColumnName(i)
-                    );
+                for(int i=0;i<model.getColumnCount();i++){
+                    header.createCell(i)
+                            .setCellValue(model.getColumnName(i));
                 }
 
-                for(int i = 0; i < model.getRowCount(); i++){
+                for(int i=0;i<model.getRowCount();i++){
 
                     org.apache.poi.ss.usermodel.Row row =
                             sheet.createRow(i+1);
 
-                    for(int j = 0; j < model.getColumnCount(); j++){
+                    for(int j=0;j<model.getColumnCount();j++){
 
-                        row.createCell(j).setCellValue(
-                                model.getValueAt(i,j).toString()
-                        );
+                        row.createCell(j)
+                                .setCellValue(model.getValueAt(i,j).toString());
 
                     }
 
                 }
 
-                java.io.FileOutputStream fileOut =
+                java.io.FileOutputStream out =
                         new java.io.FileOutputStream(file + ".xlsx");
 
-                workbook.write(fileOut);
+                workbook.write(out);
 
                 workbook.close();
-                fileOut.close();
+                out.close();
 
-                JOptionPane.showMessageDialog(this,
-                        "Excel exported successfully!");
+                JOptionPane.showMessageDialog(this,"Excel exported");
 
-            }
-            catch(Exception e){
+            }catch(Exception e){
                 e.printStackTrace();
             }
 
         }
 
     }
+    private void deleteStudent(){
+
+        int selectedRow = table.getSelectedRow();
+
+        if(selectedRow == -1){
+            JOptionPane.showMessageDialog(this,"Select a student first");
+            return;
+        }
+
+        int id = (int) model.getValueAt(selectedRow,0);
+
+        try{
+
+            Connection conn = DBConnection.getConnection();
+
+            String sql = "DELETE FROM students WHERE id = ?";
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setInt(1,id);
+
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this,"Student deleted");
+
+            refreshTable();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
 }
