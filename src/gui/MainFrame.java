@@ -35,21 +35,7 @@ public class MainFrame extends JFrame {
             new ViewStudentsFrame().setVisible(true);
         });
 
-        JButton searchBtn = new JButton("Search Student");
-        searchBtn.setBounds(150,180,200,40);
-        add(searchBtn);
-
-        JButton updateBtn = new JButton("Update Student");
-        updateBtn.setBounds(150,230,200,40);
-        add(updateBtn);
-
-        JButton deleteBtn = new JButton("Delete Student");
-        deleteBtn.setBounds(150,280,200,40);
-        add(deleteBtn);
-
-        JButton exportBtn = new JButton("Export to Excel");
-        exportBtn.setBounds(150,330,200,40);
-        add(exportBtn);
+      
 
     }
 
