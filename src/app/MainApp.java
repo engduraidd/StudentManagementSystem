@@ -20,7 +20,8 @@ public class MainApp {
             System.out.println("3. Search Student");
             System.out.println("4. Update Student");
             System.out.println("5. Delete Student");
-            System.out.println("6. Exit");
+            System.out.println("6. Export to Excel");
+            System.out.println("7. Exit");
 
             System.out.print("Choose option: ");
 
@@ -86,8 +87,12 @@ public class MainApp {
 
             }
 
-            
             else if (choice == 6) {
+
+                dao.exportToExcel();
+
+            }
+            else if (choice == 7) {
 
                 System.out.println("Goodbye!");
                 break;

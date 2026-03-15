@@ -1,7 +1,11 @@
 package database;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.FileOutputStream;
 
 import model.Student;
 
@@ -143,6 +147,54 @@ public class StudentDAO {
 	                    );
 
 	                }
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+
+	        }
+
+
+	        public void exportToExcel() {
+
+	            try {
+
+	                Connection conn = DBConnection.getConnection();
+
+	                String sql = "SELECT * FROM students";
+
+	                PreparedStatement stmt = conn.prepareStatement(sql);
+
+	                ResultSet rs = stmt.executeQuery();
+
+	                Workbook workbook = new XSSFWorkbook();
+	                Sheet sheet = workbook.createSheet("Students");
+
+	                Row header = sheet.createRow(0);
+	                header.createCell(0).setCellValue("ID");
+	                header.createCell(1).setCellValue("Name");
+	                header.createCell(2).setCellValue("Email");
+	                header.createCell(3).setCellValue("Major");
+
+	                int rowIndex = 1;
+
+	                while (rs.next()) {
+
+	                    Row row = sheet.createRow(rowIndex++);
+
+	                    row.createCell(0).setCellValue(rs.getInt("id"));
+	                    row.createCell(1).setCellValue(rs.getString("name"));
+	                    row.createCell(2).setCellValue(rs.getString("email"));
+	                    row.createCell(3).setCellValue(rs.getString("major"));
+	                }
+
+	                FileOutputStream fileOut = new FileOutputStream("students.xlsx");
+	                workbook.write(fileOut);
+
+	                fileOut.close();
+	                workbook.close();
+
+	                System.out.println("Students exported to Excel successfully!");
 
 	            } catch (Exception e) {
 	                e.printStackTrace();
